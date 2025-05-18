@@ -5,11 +5,12 @@ import { Input } from '@/components/ui/input'
 import { useRouter } from 'next/navigation'
 import React, {  useEffect, useState } from 'react'
 import UserProfile from '@/UserProfile/UserProfile'
+import { Loader } from 'lucide-react'
 
 function UserDashboardFile({user}) {
   const router = useRouter()
   const [UserData,setUserData] = useState({})
-
+  const [loading,setLoading]=useState(false)
   useEffect(()=>{
    try{
     const verifyUser=async()=>{
@@ -40,11 +41,17 @@ function UserDashboardFile({user}) {
   const [InputUrl,setInputUrl] = useState("")
   const [ImgUrl,setImgUrl]=useState("")
   const [QRHeading,setQrheading]=useState("")
+  
 
   const GenerateQR = async()=>{
     const URL = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${InputUrl}`;
+    setLoading(true)
     const result = await fetch(URL)
+    if(result){
+      setLoading(false)
+    }
     setImgUrl(result.url)
+   
     result?setQrheading(InputUrl):null
     setInputUrl("")
   }
@@ -69,7 +76,10 @@ function UserDashboardFile({user}) {
                 }} value={InputUrl}
                   />
                 <Button size={"lg"} className={"w-full font-semibold cursor-pointer h-12"} 
-                onClick={GenerateQR}>Generate QR</Button>
+                onClick={GenerateQR}>
+                  { loading?<Loader strokeWidth={3} size={100} className="animate-spin"/> :"Generate QR"
+              }
+                </Button>
              </div>
           </div>
 
@@ -79,7 +89,9 @@ function UserDashboardFile({user}) {
                  <p className='font-semibold text-slate-900/90'>{QRHeading}</p> 
                    <img src={ImgUrl} alt="" className='w-[300px] h-[300px]'/> 
                    <div className='w-full p-2' >
+                    <a href={ImgUrl} download={`${InputUrl}.png`}>
                      <Button size={"lg"} variant={"secondary"} className={"w-full font-semibold cursor-pointer h-12"}>Download</Button>
+                    </a>
                    </div>
                  </div>     
             </div>: null

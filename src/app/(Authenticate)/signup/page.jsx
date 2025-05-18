@@ -7,7 +7,7 @@ import { useEffect, useState } from "react"
 import {CreateUser,IsUserNameUnique,IsEmailUnique} from "@/Actions/SignUpActions"
 import BackNavbar from "@/components/BackNavbar"
 import Link from "next/link"
-import { EyeOff,EyeIcon } from "lucide-react"
+import { EyeOff,EyeIcon ,Loader} from "lucide-react"
 
 function Signup() {
   const [UserName,setUserName]=useState("")
@@ -20,11 +20,19 @@ function Signup() {
   const [emailErr,setEmailErr]=useState("")
   const [passwordErr,setPasswordErr]=useState("")
 
+  const [loading , setLoading]=useState(false)
+
   const HandleSignup= async (e)=>{
     e.preventDefault();
+    setLoading(true)
     const UserData={UserName,Email,Password}
     const result = await CreateUser(UserData)
     console.log(result.msg)
+    if(result){
+      setLoading(false)
+    }else{
+      setLoading(false)
+    }
   }
 
   function ValidEmail(Email){
@@ -123,7 +131,10 @@ function Signup() {
             </div>
 
 
-            <Button size={"lg"} className={`w-full cursor-pointer h-12`} type="submit">SignUp</Button>
+            <Button size={"lg"} className={`w-full cursor-pointer h-12`} type="submit">
+              { loading?<Loader strokeWidth={3} size={100} className="animate-spin"/> :"Sign Up"
+              }
+            </Button>
 
             
           </form>

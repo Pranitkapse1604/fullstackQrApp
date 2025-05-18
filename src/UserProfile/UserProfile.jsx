@@ -1,20 +1,23 @@
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { UserCircle2 } from 'lucide-react'
-import React from 'react'
+import { UserCircle2,Loader } from 'lucide-react'
+import React, { useState } from 'react'
 import { signOut } from '@/Actions/SignInActions'
 import { useRouter } from 'next/navigation'
 
 function UserProfile({UserData}) {
    
     const router = useRouter()
-
+  const [loading,setloading]=useState(false)
   const handleSignOut =async ()=>{
+     setloading(true)
      const result = await signOut()
      if(result.success){
        router.push("/")
+       setloading(false)
      }else{
         console.log(result.msg)
+        setloading(false)
      }
   }
   return (
@@ -42,7 +45,10 @@ function UserProfile({UserData}) {
         </div>
 
         <div className='w-full'>
-            <Button size={"lg"}  className={"w-full h-12 cursor-pointer"} onClick={handleSignOut} type="button">Log Out</Button>
+            <Button size={"lg"}  className={"w-full h-12 cursor-pointer"} onClick={handleSignOut} type="button">
+                { loading?<Loader strokeWidth={3} size={100} className="animate-spin"/> :"Log Out"
+              }
+            </Button>
         </div>
        </div>
     </div>

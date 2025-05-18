@@ -8,13 +8,14 @@ import {LoginAction }from "@/Actions/SignInActions"
 import BackNavbar from "@/components/BackNavbar"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { EyeIcon,EyeOff } from "lucide-react"
+import { EyeIcon,EyeOff, Loader } from "lucide-react"
 
 function Login() {
   
   const [Email,setEmail]=useState("")
   const [Password,setPassword]=useState("")
   const router=useRouter()
+  const [loading , setLoading]=useState(false)
 
   const [showPassword,setShowPassword]=useState(false)
 
@@ -23,19 +24,21 @@ function Login() {
 
   const HandleSignIn= async (e)=>{
     e.preventDefault();
+    setLoading(true)
     const UserData={Email,Password}
     const result = await LoginAction(UserData)
-    if(result.success){
-      
+    if(result.success){   
       router.push(`/dashboard/${result.Username}`)
-      
+      setLoading(false)    
+    }else{
+      setLoading(false)
     }
   }
 
   return (
     <div className="flex flex-col items-center ">
          <BackNavbar />
-         "hii"
+         
         <div className="max-w-[600px] w-9/10 px-4 py-6 ">
           <h2 className="text-3xl text-center mb-4 anton">Login</h2>
           <form className="grid gap-2 barlow" onSubmit={HandleSignIn}>
@@ -79,7 +82,9 @@ function Login() {
             </div>
 
 
-            <Button size={"lg"} className={`w-full cursor-pointer h-12`} type="submit">SignIn</Button>     
+            <Button size={"lg"} className={`w-full cursor-pointer h-12`} type="submit">
+              { loading?<Loader strokeWidth={3} size={100} className="animate-spin"/> :"SignIn"
+              }</Button>     
           </form>
 
           <div className="my-4 barlow">
