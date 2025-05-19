@@ -4,11 +4,13 @@ import { UserCircle2,Loader } from 'lucide-react'
 import React, { useState } from 'react'
 import { signOut } from '@/Actions/SignInActions'
 import { useRouter } from 'next/navigation'
+import { ShowDialog } from '@/components/ShowDialog'
 
 function UserProfile({UserData}) {
    
     const router = useRouter()
   const [loading,setloading]=useState(false)
+  
   const handleSignOut =async ()=>{
      setloading(true)
      const result = await signOut()
@@ -45,10 +47,12 @@ function UserProfile({UserData}) {
         </div>
 
         <div className='w-full'>
-            <Button size={"lg"}  className={"w-full h-12 cursor-pointer"} onClick={handleSignOut} type="button">
+            {/* <Button size={"lg"}  className={"w-full h-12 cursor-pointer"} onClick={handleSignOut} type="button">
                 { loading?<Loader strokeWidth={3} size={100} className="animate-spin"/> :"Log Out"
               }
-            </Button>
+            </Button> */}
+            <ShowDialog ButtonName={"Log Out"} DialogHeader={"Do you want to Log Out?"} 
+            DialogDescription={"If you press Log Out you will be Sign Out. Your session will be deleted, Do you want to procceed?"} action = {handleSignOut}/>
         </div>
        </div>
     </div>

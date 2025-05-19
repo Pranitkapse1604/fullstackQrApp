@@ -8,6 +8,7 @@ import {CreateUser,IsUserNameUnique,IsEmailUnique} from "@/Actions/SignUpActions
 import BackNavbar from "@/components/BackNavbar"
 import Link from "next/link"
 import { EyeOff,EyeIcon ,Loader} from "lucide-react"
+import MyAlertNotification from "@/components/MyAlertNotification"
 
 function Signup() {
   const [UserName,setUserName]=useState("")
@@ -22,6 +23,10 @@ function Signup() {
 
   const [loading , setLoading]=useState(false)
 
+  const [serverErr,setServerErr]=useState(false)
+  const [serverErrMsg,setServerErrMsg] = useState("")
+  const [isServerMsgGreen,setIsServerMsgGreen]=useState(false)
+
   const HandleSignup= async (e)=>{
     e.preventDefault();
     setLoading(true)
@@ -30,7 +35,15 @@ function Signup() {
     console.log(result.msg)
     if(result){
       setLoading(false)
+      setIsServerMsgGreen(true)
+      setServerErr(true)
+      setServerErrMsg(result.msg)
+      setUserName("")
+      setEmail("")
+      setPassword("")
     }else{
+      setServerErr(true)
+      setServerErrMsg(result.msg)
       setLoading(false)
     }
   }
@@ -48,11 +61,24 @@ function Signup() {
       setEmailErr("email syntax is not correct")
     }
   }
-  
+  const checkValuesEntered = () =>{
+    const checker = !userNameErr && UserName && !emailErr && Email && !passwordErr && Password ; 
+    return !checker
+  }
+  useEffect(()=>{
+    
+  },[])
   return (
     <div className="flex flex-col items-center font-serif">
          <BackNavbar />
-        <div className="max-w-[600px] w-9/10 px-4 py-6">
+        <div className="max-w-[600px] w-9/10 px-4 py-2">
+          {/* server error alert  */}
+         <div className=" w-full h-12 my-1  grid items-center  ">
+           {
+            serverErr && <MyAlertNotification serverErrMsg={serverErrMsg} isServerMsgGreen={isServerMsgGreen}/>
+           }
+          </div>
+
           <h2 className="text-3xl text-center mb-4 anton">Sign up</h2>
           <form className="grid gap-2 barlow" onSubmit={HandleSignup}>
             {/* row 1  */}
@@ -63,12 +89,16 @@ function Signup() {
                 onChange={async(e)=>{
                   const value = e.target.value
                   setUserName(value)
-                   
+                  
                   if(value.length>=4){
                     const result = await IsUserNameUnique(value)
                     setUserNameErr(result.msg)
                   }else{
                     setUserNameErr("UserName must have atleast 4 letters")
+                  }
+                  if(serverErr){
+                    setServerErr(false)
+                    setServerErrMsg("")
                   }
                 }}/>
                 <p className={`${userNameErr?"visible":"invisible"} text-[10px] font-semibold text-red-400`}>
@@ -88,6 +118,10 @@ function Signup() {
                   const EmailVal = e.target.value
                   setEmail(EmailVal)
                   checkEmail(EmailVal)
+                  if(serverErr){
+                    setServerErr(false)
+                    setServerErrMsg("")
+                  }
                 }}/>
                  <p className={`${emailErr?"visible":"invisible"} text-[10px] font-semibold text-red-400`}>
                   {
@@ -102,12 +136,17 @@ function Signup() {
               <div className="grid gap-1.5 relative">
                 <Input className={`border-black/30 border-2 h-10`} value={Password}
                 onChange={(e)=>{
+
                   const passwrdValue=e.target.value
                   setPassword(passwrdValue)
                   if(passwrdValue.length<8){
                     setPasswordErr("password must have at least 8 letters")
                   }else{
                     setPasswordErr("")
+                  }
+                  if(serverErr){
+                    setServerErr(false)
+                    setServerErrMsg("")
                   }
                 }}
                 
@@ -131,7 +170,8 @@ function Signup() {
             </div>
 
 
-            <Button size={"lg"} className={`w-full cursor-pointer h-12`} type="submit">
+            <Button size={"lg"} className={`w-full cursor-pointer h-12`} type="submit" 
+            disabled={checkValuesEntered()}>
               { loading?<Loader strokeWidth={3} size={100} className="animate-spin"/> :"Sign Up"
               }
             </Button>

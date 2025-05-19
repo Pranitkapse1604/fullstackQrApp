@@ -13,7 +13,7 @@ export  async function LoginAction(UserData){
     if(!User){
         return {
             success:false,
-            msg:"User not found ! resister first"
+            msg:"User not found, Resister first"
         }
     }
 

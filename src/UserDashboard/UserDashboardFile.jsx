@@ -44,7 +44,8 @@ function UserDashboardFile({user}) {
   
 
   const GenerateQR = async()=>{
-    const URL = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${InputUrl}`;
+    try{
+      const URL = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${InputUrl}`;
     setLoading(true)
     const result = await fetch(URL)
     if(result){
@@ -54,6 +55,9 @@ function UserDashboardFile({user}) {
    
     result?setQrheading(InputUrl):null
     setInputUrl("")
+   }catch(err){
+    setLoading(false)
+   }
   }
   const [showProfile,setShowProfile]=useState(false)
   return (

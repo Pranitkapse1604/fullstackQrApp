@@ -42,7 +42,7 @@ export  async function IsUserNameUnique(username){
 
     return {
       success:true,
-      msg:""
+      msg:undefined
     }
   }catch(err){
      return {
@@ -66,7 +66,7 @@ export  async function IsEmailUnique(email){
 
     return {
       success:true,
-      msg:""
+      msg:undefined
     }
   }catch(err){
      return {

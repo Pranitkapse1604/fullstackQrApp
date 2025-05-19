@@ -3,12 +3,13 @@
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import {LoginAction }from "@/Actions/SignInActions"
 import BackNavbar from "@/components/BackNavbar"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { EyeIcon,EyeOff, Loader } from "lucide-react"
+import { EyeIcon,EyeOff, Loader ,AlertCircle } from "lucide-react"
+import MyAlertNotification from "@/components/MyAlertNotification"
 
 function Login() {
   
@@ -19,8 +20,10 @@ function Login() {
 
   const [showPassword,setShowPassword]=useState(false)
 
-  const [emailErr,setEmailErr]=useState("")
-  const [passwordErr,setPasswordErr]=useState("")
+  const [serverErr,setServerErr]=useState(false)
+  const [serverErrMsg,setServerErrMsg] = useState("")
+  const [isServerMsgGreen,setIsServerMsgGreen]=useState(false)
+
 
   const HandleSignIn= async (e)=>{
     e.preventDefault();
@@ -29,17 +32,37 @@ function Login() {
     const result = await LoginAction(UserData)
     if(result.success){   
       router.push(`/dashboard/${result.Username}`)
-      setLoading(false)    
+      setLoading(false)
+      setServerErr(false) 
     }else{
+
+      setServerErr(true)
+      setServerErrMsg(result.msg)
       setLoading(false)
     }
   }
+  const checkValuesEntered=()=>{
+     const checker = Email && Password
+     return !checker
+  }
+  useEffect(()=>{
+    checkValuesEntered()
+  },[Email,Password])
 
   return (
     <div className="flex flex-col items-center ">
          <BackNavbar />
          
-        <div className="max-w-[600px] w-9/10 px-4 py-6 ">
+        <div className="max-w-[600px] w-9/10 px-4 py-2 ">
+         {/* server error alert  */}
+         
+           <div className=" w-full h-12 my-1 barlow grid items-center  ">
+              {
+               serverErr && <MyAlertNotification serverErrMsg={serverErrMsg} isServerMsgGreen={isServerMsgGreen}/>
+              }
+          </div>
+          
+
           <h2 className="text-3xl text-center mb-4 anton">Login</h2>
           <form className="grid gap-2 barlow" onSubmit={HandleSignIn}>
             {/* row 1  */}
@@ -49,6 +72,7 @@ function Login() {
                 <Input className={`border-black/30 border-2 h-10`} value={Email}
                 onChange={(e)=>{
                   setEmail(e.target.value)
+                  setServerErr(false)
                 }}/>
                 <p className="invisible text-[12px]">{"msg"}</p>
               </div>        
@@ -62,6 +86,7 @@ function Login() {
                 onChange={(e)=>{
                   const passwrdValue=e.target.value
                   setPassword(passwrdValue)
+                  setServerErr(false)
                 }}
                 
                 type={`${showPassword?"text":"password"}`}/>
@@ -82,7 +107,7 @@ function Login() {
             </div>
 
 
-            <Button size={"lg"} className={`w-full cursor-pointer h-12`} type="submit">
+            <Button size={"lg"} className={`w-full cursor-pointer h-12`} type="submit" disabled={checkValuesEntered()}>
               { loading?<Loader strokeWidth={3} size={100} className="animate-spin"/> :"SignIn"
               }</Button>     
           </form>
